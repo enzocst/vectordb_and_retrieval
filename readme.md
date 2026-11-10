@@ -1,134 +1,140 @@
 # Sistema de Recuperação de Informações com FAISS e RetrievalQA
 
-Projeto acadêmico desenvolvido em Python para recuperar informações de um documento PDF e responder perguntas com base nos trechos mais relevantes do texto. A solução utiliza **LangChain**, **Ollama**, **FAISS** e o módulo **RetrievalQA**, seguindo a abordagem de *Retrieval-Augmented Generation* (RAG).
+Projeto acadêmico em Python que implementa um sistema de **Recuperação Aumentada por Geração (RAG)** para responder perguntas a partir do conteúdo de um documento PDF. O sistema usa **LangChain**, **Ollama**, **FAISS** e **RetrievalQA**.
 
 ## Objetivo
 
-Construir um sistema que:
+Construir um pipeline que:
 
-1. Carregue o conteúdo de um documento PDF.
-2. Divida o texto em trechos menores (*chunks*).
-3. Gere representações vetoriais (*embeddings*) desses trechos.
+1. Carregue um documento PDF e extraia seu texto.
+2. Divida o conteúdo em trechos (*chunks*).
+3. Gere *embeddings* para os trechos.
 4. Armazene os vetores em um índice FAISS.
-5. Receba uma pergunta, recupere trechos semanticamente semelhantes e produza uma resposta utilizando um modelo de linguagem local.
+5. Receba perguntas, recupere trechos relevantes e produza respostas com um modelo de linguagem local.
 
-## Tecnologias utilizadas
+## Tecnologias
 
-- **Python 3.12** — linguagem de programação.
-- **Jupyter Notebook** — ambiente de execução e experimentação do projeto.
-- **LangChain** — integração das etapas de leitura, recuperação e geração de respostas.
-- **PyPDFLoader** — extração de texto do PDF.
-- **RecursiveCharacterTextSplitter** — divisão do texto em chunks.
-- **Ollama** — execução local dos modelos de embeddings e de linguagem.
-- **nomic-embed-text** — modelo responsável pela geração de embeddings.
-- **FAISS** — índice vetorial para busca por similaridade.
-- **llama3.2:1b** — modelo de linguagem utilizado para gerar as respostas.
-- **RetrievalQA** (`langchain-classic`) — cadeia que conecta a recuperação de trechos à geração de respostas.
-
-> **Observação:** `RetrievalQA` é uma API legada do LangChain, mas foi mantida porque seu uso é um requisito explícito da atividade.
+- **Python 3.12** — linguagem utilizada no projeto.
+- **Jupyter Notebook** — ambiente de execução do arquivo `.ipynb`.
+- **LangChain** — organização das etapas do pipeline.
+- **PyPDFLoader** (`langchain-community`) — leitura do PDF.
+- **RecursiveCharacterTextSplitter** (`langchain-text-splitters`) — divisão do texto em chunks.
+- **Ollama** — execução local dos modelos.
+- **nomic-embed-text** — geração de embeddings.
+- **FAISS** (`faiss-cpu`) — índice vetorial e busca por similaridade.
+- **llama3.2:1b** — geração de respostas.
+- **RetrievalQA** (`langchain-classic`) — integração da recuperação de trechos com o modelo de linguagem.
 
 ## Estrutura do projeto
 
 ```text
-sistema-rag/
+projeto-rag/
 ├── documents/
-│   └── mestrado_ufrn.pdf
+│   └── inteligencia_artificial.pdf
 ├── rag.ipynb
 └── README.md
 ```
 
-O arquivo `documents/mestrado_ufrn.pdf` é o documento de referência utilizado pelo notebook. O caminho é relativo ao diretório de trabalho em que o Jupyter está sendo executado.
+> O notebook mais recente foi enviado como `rag(1).ipynb`. Você pode manter esse nome ou renomeá-lo para `rag.ipynb` ao organizar o repositório. O PDF deve estar em `documents/inteligencia_artificial.pdf`, relativo ao diretório de execução do notebook.
 
 ## Pré-requisitos
 
 - Python 3.12 instalado.
 - VS Code com as extensões **Python** e **Jupyter**, ou outro ambiente compatível com notebooks.
-- [Ollama](https://ollama.com/) instalado e disponível no computador.
-- Arquivo PDF localizado em `documents/mestrado_ufrn.pdf`.
+- Ollama instalado e disponível no computador.
 
-## Instalação
+### 1. Instalar as dependências Python
 
-No terminal do VS Code, instale as dependências do Python:
+No terminal, execute:
 
 ```powershell
 py -3.12 -m pip install langchain langchain-classic langchain-community langchain-ollama langchain-text-splitters faiss-cpu pypdf fonttools jupyter ipykernel
 ```
 
-Baixe os modelos utilizados no projeto:
+O `fonttools` é incluído para auxiliar na interpretação de fontes de determinados PDFs.
+
+### 2. Baixar os modelos do Ollama
 
 ```powershell
 ollama pull nomic-embed-text
 ollama pull llama3.2:1b
 ```
 
-Certifique-se de que o serviço do Ollama esteja em execução antes de utilizar o notebook.
+Certifique-se de que o Ollama esteja em execução antes de executar as células que geram embeddings ou respostas.
 
-## Como executar
+### 3. Abrir e executar o notebook
 
 1. Abra a pasta do projeto no VS Code.
-2. Confirme que o PDF está em `documents/mestrado_ufrn.pdf`.
-3. Abra o arquivo `rag.ipynb`.
-4. Selecione um kernel Jupyter associado ao **Python 3.12** com as dependências instaladas.
-5. Execute as células **em ordem**, da primeira até a última.
-6. Observe a resposta gerada para a pergunta definida no notebook.
+2. Confirme que o PDF está no caminho `documents/inteligencia_artificial.pdf`.
+3. Abra `rag.ipynb` (ou `rag(1).ipynb`).
+4. Selecione o kernel do Python 3.12.
+5. Execute as células em ordem, de cima para baixo.
+6. Na última célula, digite uma pergunta sobre o documento quando solicitado.
 
-Atualmente, o exemplo de pergunta utilizado é:
+## Como o sistema funciona
 
-```python
-pergunta = "Qual é o assunto principal do documento?"
+```text
+PDF
+  ↓
+PyPDFLoader (extração do texto)
+  ↓
+RecursiveCharacterTextSplitter (chunks)
+  ↓
+OllamaEmbeddings: nomic-embed-text
+  ↓
+FAISS (índice vetorial)
+  ↓
+Pergunta do usuário → busca de trechos relevantes
+  ↓
+RetrievalQA + ChatOllama: llama3.2:1b
+  ↓
+Resposta
 ```
 
-Para testar outra pergunta, altere o conteúdo da variável `pergunta` na última célula e execute-a novamente após configurar o pipeline.
+### Divisão em chunks
 
-## Funcionamento do sistema
-
-### 1. Leitura do documento
-
-O `PyPDFLoader` lê o PDF e cria objetos contendo o texto extraído de suas páginas.
-
-### 2. Divisão em chunks
-
-O texto é dividido com a seguinte configuração:
+O notebook utiliza:
 
 ```python
 divisor = RecursiveCharacterTextSplitter(
     chunk_size=1500,
     chunk_overlap=200
 )
+
+trechos = divisor.split_documents(documentos)
 ```
 
-Cada trecho tem tamanho máximo configurado de aproximadamente **1.500 caracteres**, com **200 caracteres de sobreposição** entre trechos quando aplicável. A quantidade final de chunks depende do conteúdo do PDF.
+Cada trecho tem como referência até 1.500 caracteres, com sobreposição de 200 caracteres entre trechos consecutivos, quando aplicável. Essa sobreposição ajuda a preservar o contexto entre divisões.
 
-### 3. Geração de embeddings
-
-O modelo `nomic-embed-text`, executado pelo Ollama, converte os trechos em vetores numéricos que representam características semânticas do texto.
-
-### 4. Criação do índice vetorial
-
-Os trechos e seus embeddings são inseridos no FAISS:
+### Criação do índice vetorial
 
 ```python
+embeddings = OllamaEmbeddings(model="nomic-embed-text")
+
 banco_vetorial = FAISS.from_documents(
     documents=trechos,
     embedding=embeddings
 )
 ```
 
-Neste projeto, o índice é criado **em memória** durante a execução do notebook; não há etapa de salvamento permanente em disco.
+O índice FAISS é criado **em memória** durante a execução do notebook. A versão atual não salva nem recarrega o índice do disco; ao reiniciar o kernel, é necessário executar novamente as células de preparação.
 
-### 5. Busca por similaridade
+### Busca por similaridade
 
-O notebook demonstra uma busca direta pelos três trechos mais próximos semanticamente da pergunta:
+O notebook demonstra uma consulta direta ao FAISS:
 
 ```python
+pergunta = "Do que se trata o documento?"
 resultados = banco_vetorial.similarity_search(pergunta, k=3)
 ```
 
-### 6. Resposta com RetrievalQA
+O parâmetro `k=3` indica a recuperação de três trechos mais próximos da pergunta segundo a busca vetorial.
 
-O recuperador consulta o FAISS, e o `RetrievalQA` utiliza os trechos encontrados como contexto para o modelo `llama3.2:1b`:
+### Configuração do RetrievalQA
 
 ```python
+modelo = ChatOllama(model="llama3.2:1b", temperature=0)
+
 recuperador = banco_vetorial.as_retriever(
     search_kwargs={"k": 3}
 )
@@ -137,45 +143,48 @@ qa = RetrievalQA.from_chain_type(
     llm=modelo,
     chain_type="stuff",
     retriever=recuperador,
-    return_source_documents=True
 )
+```
+
+O `RetrievalQA` recupera os trechos relacionados à pergunta e os envia como contexto ao modelo de linguagem, que gera uma resposta.
+
+### Perguntas interativas
+
+A última célula do notebook permite inserir uma pergunta:
+
+```python
+pergunta = input("Digite sua pergunta sobre o documento: ")
 
 resultado = qa.invoke({"query": pergunta})
+
+print("\nRESPOSTA:")
 print(resultado["result"])
 ```
 
-A conversão da pergunta em embedding ocorre internamente durante a recuperação vetorial.
+Para fazer outra pergunta, basta executar novamente essa última célula, desde que o kernel permaneça ativo e as etapas anteriores já tenham sido executadas.
 
-## Fluxo resumido
+## Limitações e observações
 
-```text
-PDF
-  ↓
-Extração de texto (PyPDFLoader)
-  ↓
-Divisão em chunks (RecursiveCharacterTextSplitter)
-  ↓
-Geração de embeddings (nomic-embed-text)
-  ↓
-Indexação no FAISS
-  ↓
-Pergunta do usuário
-  ↓
-Busca dos 3 trechos mais semelhantes
-  ↓
-RetrievalQA + llama3.2:1b
-  ↓
-Resposta gerada
-```
+- A qualidade das respostas depende do conteúdo extraído do PDF e dos trechos recuperados.
+- O modelo pode produzir respostas incorretas; é recomendável conferir informações importantes no documento original.
+- PDFs digitalizados sem texto selecionável podem exigir OCR, não implementado neste notebook.
+- O código utiliza `RetrievalQA`, disponível em `langchain-classic`; trata-se de uma API legada mantida aqui por corresponder ao requisito da atividade.
+- A versão atual imprime a resposta, mas não apresenta automaticamente as páginas usadas como fonte.
 
-## Limitações
+## Relação com os requisitos da atividade
 
-- A qualidade das respostas depende do texto extraído, da relevância dos trechos recuperados e do modelo de linguagem utilizado.
-- PDFs digitalizados como imagem podem exigir OCR antes da indexação.
-- O modelo pode produzir respostas incorretas ou informações não sustentadas pelo documento; recomenda-se conferir os trechos recuperados.
-- O índice FAISS precisa ser reconstruído após reiniciar o kernel e executar novamente o notebook.
-- O notebook utiliza uma pergunta definida no código, não uma interface interativa.
+| Requisito | Implementação |
+| --- | --- |
+| Preparação do ambiente | Python, LangChain, FAISS e dependências |
+| Escolha de textos | `documents/inteligencia_artificial.pdf` |
+| Divisão em chunks | `RecursiveCharacterTextSplitter` |
+| Geração de embeddings | `OllamaEmbeddings` com `nomic-embed-text` |
+| Banco de dados vetorial | FAISS |
+| Recuperação por similaridade | `similarity_search` e `as_retriever` |
+| Integração com RetrievalQA | `RetrievalQA.from_chain_type` |
+| Pergunta do usuário | `input()` |
+| Resposta com base no contexto recuperado | `qa.invoke()` e `ChatOllama` |
 
-## Contexto acadêmico
+## Licença
 
-O projeto atende às etapas propostas na atividade **“Construção de um Sistema de Recuperação de Informações usando VectorDB e RetrievalQA”**: preparação do ambiente, divisão de textos, geração de embeddings, criação de banco vetorial com FAISS e integração do pipeline de perguntas e respostas com RetrievalQA.
+Nenhuma licença foi definida neste README. Caso o projeto seja publicado, escolha uma licença apropriada e verifique se o PDF utilizado pode ser redistribuído.
