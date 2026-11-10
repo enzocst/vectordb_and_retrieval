@@ -200,6 +200,3 @@ Para fazer outra pergunta, basta executar novamente essa última célula, desde 
 | Pergunta do usuário | `input()` |
 | Resposta com base no contexto recuperado | `qa.invoke()` e `ChatOllama` |
 
-## Licença
-
-Nenhuma licença foi definida neste README. Caso o projeto seja publicado, escolha uma licença apropriada e verifique se o PDF utilizado pode ser redistribuído.
