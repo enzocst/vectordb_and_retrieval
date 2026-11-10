@@ -1,6 +1,6 @@
 # Sistema de Recuperação de Informações com FAISS e RetrievalQA
 
-Projeto acadêmico em Python que implementa um sistema de **Recuperação Aumentada por Geração (RAG)** para responder perguntas a partir do conteúdo de um documento PDF. O sistema usa **LangChain**, **Ollama**, **FAISS** e **RetrievalQA**.
+Este projeto em Python implementa um sistema de **Recuperação Aumentada por Geração (RAG)** para responder perguntas a partir do conteúdo de um documento PDF. O sistema usa **LangChain**, **Ollama**, **FAISS** e **RetrievalQA**.
 
 ## Objetivo
 
