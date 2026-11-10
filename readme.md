@@ -1,6 +1,6 @@
 # Sistema de Recuperação de Informações com FAISS e RetrievalQA
 
-Este projeto em Python implementa um sistema de **Recuperação Aumentada por Geração (RAG)** para responder perguntas a partir do conteúdo de um documento PDF. O sistema usa **LangChain**, **Ollama**, **FAISS** e **RetrievalQA**.
+Projeto em Python que implementa um sistema de **Recuperação Aumentada por Geração (RAG)** para responder perguntas a partir do conteúdo de um documento PDF. O sistema usa **LangChain**, **Ollama**, **FAISS** e **RetrievalQA**.
 
 ## Objetivo
 
@@ -32,6 +32,7 @@ projeto-rag/
 ├── documents/
 │   └── inteligencia_artificial.pdf
 ├── rag.ipynb
+├── requirements.txt
 └── README.md
 ```
 
@@ -45,13 +46,27 @@ projeto-rag/
 
 ### 1. Instalar as dependências Python
 
-No terminal, execute:
+O arquivo `requirements.txt` contém as dependências Python utilizadas no projeto:
 
-```powershell
-py -3.12 -m pip install langchain langchain-classic langchain-community langchain-ollama langchain-text-splitters faiss-cpu pypdf fonttools jupyter ipykernel
+```txt
+langchain
+langchain-classic
+langchain-community
+langchain-ollama
+langchain-text-splitters
+faiss-cpu
+jupyter
+ipykernel
+pypdf
 ```
 
-O `fonttools` é incluído para auxiliar na interpretação de fontes de determinados PDFs.
+Na pasta do projeto, execute no terminal do VS Code:
+
+```powershell
+py -3.12 -m pip install -r requirements.txt
+```
+
+O `requirements.txt` instala as bibliotecas Python, mas **não instala o Ollama nem baixa seus modelos**. Caso apareçam avisos relacionados à interpretação de fontes do PDF, é possível instalar adicionalmente `fonttools` com `py -3.12 -m pip install fonttools`.
 
 ### 2. Baixar os modelos do Ollama
 
@@ -185,3 +200,6 @@ Para fazer outra pergunta, basta executar novamente essa última célula, desde 
 | Pergunta do usuário | `input()` |
 | Resposta com base no contexto recuperado | `qa.invoke()` e `ChatOllama` |
 
+## Licença
+
+Nenhuma licença foi definida neste README. Caso o projeto seja publicado, escolha uma licença apropriada e verifique se o PDF utilizado pode ser redistribuído.
