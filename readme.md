@@ -81,7 +81,7 @@ Certifique-se de que o Ollama esteja em execução antes de executar as células
 
 1. Abra a pasta do projeto no VS Code.
 2. Confirme que o PDF está no caminho `documents/inteligencia_artificial.pdf`.
-3. Abra `rag.ipynb` (ou `rag(1).ipynb`).
+3. Abra `rag.ipynb` (ou `rag.ipynb`).
 4. Selecione o kernel do Python 3.12.
 5. Execute as células em ordem, de cima para baixo.
 6. Na última célula, digite uma pergunta sobre o documento quando solicitado.
